@@ -40,6 +40,5 @@ app.get('/talker', async (request, response) => {
 
 app.post('/login', async (request, response) => {
   const token = crypto.randomBytes(8).toString('hex');
-
-    return response.status(200).send({ token: token})
+  return response.status(200).send({ token: token})
 });  
