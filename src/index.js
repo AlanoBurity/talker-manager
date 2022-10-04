@@ -1,21 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { readTalkers } = require('./utils/readAndWriteFiles');
 const crypto = require('crypto');
+const { readTalkers } = require('./utils/readAndWriteFiles');
 
 const {
   validateEmail,
   validatePassword,
-} = require('./validations')
+} = require('./validations');
 
 const app = express();
 app.use(bodyParser.json());
 
 const HTTP_OK_STATUS = 200;
 const PORT = '3000';
-
-
-
 
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {
@@ -32,7 +29,6 @@ app.get('/talker', async (request, response) => {
 });  
 
  app.get('/talker/:id', async (request, response) => {
-
   const { id } = request.params;
   const talker = await readTalkers();
   const talkerId = talker.find((e) => e.id === Number(id));
@@ -40,8 +36,7 @@ app.get('/talker', async (request, response) => {
   return response.status(404).send({ message: 'Pessoa palestrante não encontrada' });
 });
 
-
 app.post('/login', validateEmail, validatePassword, (request, response) => {
   const token = crypto.randomBytes(8).toString('hex');
-  return response.status(200).send({ token: token})
+  return response.status(200).send({ token });
 });  

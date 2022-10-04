@@ -15,12 +15,12 @@ const readTalkers = async () => {
 const writeTalkers = async () => {
     try {
         const content = await fs.writeFile(join(__dirname, pathFile), 'utf-8');
-        return JSON.parse(content)
+        return JSON.parse(content);
     } catch (error) {
         console.log('Erro ao escrever no arquivo', error.message);
         return null;
     }
-}
+};
 
 module.exports = {
     readTalkers,
