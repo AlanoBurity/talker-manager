@@ -93,6 +93,16 @@ app.put(('/talker/:id'),
   response.status(200).json(editTalker);
 });
 
+app.delete('/talker/:id', validateToken, async (request, response) => {
+ const { id } = request.params; 
+ const talker = await readTalkers();
+
+ const findTalker = talker.find((e) => e.id !== Number(id));
+
+ await writeTalkers(findTalker);
+ return response.status(204).send();
+});
+
 app.listen(PORT, () => {
   console.log('Online');
 });
