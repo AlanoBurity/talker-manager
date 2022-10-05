@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
-const rescue = require('express-rescue');
+
 const { readTalkers } = require('./utils/readAndWriteFiles');
 const { writeTalkers } = require('./utils/readAndWriteFiles');
 
@@ -52,7 +52,7 @@ app.post(('/talker'),
   validateTalk, 
   validateRate, 
   validateWatchedAt,
-  rescue(async (req, res) => {
+ async (req, res) => {
     const { name, age, talk: { watchedAt, rate } } = req.body;
     const talker = await readTalkers();
     const newTalker = {
@@ -69,16 +69,28 @@ app.post(('/talker'),
     await writeTalkers(newTalkers);
 
     res.status(201).json(newTalker);
-  }));
+  });
 
 app.put(('/talker/:id'), 
- validateToken,
- validateName, 
- validateAge, 
- validateTalk, 
- validateRate, 
- validateWatchedAt, (request, response) => {
-  response.status(201).json({ message: 'olá' });
+ validateName, validateAge, validateTalk, validateRate, validateWatchedAt,
+ validateToken, async (request, response) => {
+  const { name, age, talk: { watchedAt, rate } } = request.body;
+  const { id } = request.params;
+  const talker = await readTalkers();
+  const findTalker = talker.findIndex((e) => e.id === Number(id));
+  const editTalker = {
+    id: Number(id),
+    name,
+    age,
+    talk: {
+      watchedAt,
+      rate,
+    },
+  };
+  const editedTalkers = [...talker];
+  editedTalkers[findTalker] = editTalker;
+  await writeTalkers(editedTalkers);
+  response.status(200).json(editTalker);
 });
 
 app.listen(PORT, () => {
