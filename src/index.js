@@ -27,10 +27,24 @@ app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
+app.listen(PORT, () => {
+  console.log(`Online na porta ${PORT}`);
+});
+
 app.get('/talker', async (request, response) => {
   const talker = await readTalkers();
   response.status(200).json(talker); 
 });  
+
+app.get('/talker/search', validateToken, async (request, response) => {
+  const search = request.query.q;
+  const talker = await readTalkers();
+  const query = talker.filter((e) => e.name.includes(search));
+  if (!search) {
+    return response.status(401).send([]);
+  }
+  return response.status(200).send(query);
+});
 
  app.get('/talker/:id', async (request, response) => {
   const { id } = request.params;
@@ -101,8 +115,4 @@ app.delete('/talker/:id', validateToken, async (request, response) => {
 
  await writeTalkers(findTalker);
  return response.status(204).send();
-});
-
-app.listen(PORT, () => {
-  console.log('Online');
 });
